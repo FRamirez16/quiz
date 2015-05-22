@@ -4,6 +4,7 @@ var router = express.Router();
 var quizController = require('../controllers/quiz_controller');
 var commentController = require('../controllers/comment_controller');
 var sessionController = require('../controllers/session_controller');
+var userController = require('../controllers/user_controller');
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'Quiz', errors: []});
@@ -13,10 +14,18 @@ router.get('/author', function(req,res){
 });
 router.param('quizId', quizController.load);
 router.param('commentId', commentController.load); 
+router.param('userId', userController.load);
 
 router.get('/login',  sessionController.new);     // formulario login
 router.post('/login', sessionController.create);  // crear sesión
 router.get('/logout', sessionController.destroy);
+
+router.get('/user',  userController.new);     // formulario sign un
+router.post('/user',  userController.create);     // registrar usuario
+router.get('/user/:userId(\\d+)/edit',  sessionController.loginRequired, userController.edit);     // editar información de cuenta
+router.put('/user/:userId(\\d+)',  sessionController.loginRequired, userController.update);     // actualizar información de cuenta
+router.delete('/user/:userId(\\d+)',  sessionController.loginRequired, userController.destroy);     // borrar cuenta
+
 router.get('/quizes',                      quizController.index);
 router.get('/quizes/:quizId(\\d+)',        quizController.show);
 router.get('/quizes/:quizId(\\d+)/answer', quizController.answer);
