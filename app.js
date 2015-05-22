@@ -27,6 +27,20 @@ app.use(session());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req,res,next){
+  var TMAX = 120000;
+  var AUX = new Date().getTime();
+  if (req.session.user){
+    if ((AUX - req.session.user.time) > (TMAX)){
+        delete req.session.user;
+        res.redirect("/login");
+    }else {
+        req.session.user.time = new Date().getTime();
+        next();}
+    }else{
+        next();}
+});
+
 app.use(function(req, res, next) {
 
   // guardar path en session.redir para despues de login
