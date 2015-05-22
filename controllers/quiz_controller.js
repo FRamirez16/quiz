@@ -30,10 +30,14 @@ exports.load = function(req, res, next, quizId) {
   ).catch(function(error) { next(error)});
 };
 exports.index = function(req, res) {
+  var options = {};
+  if(req.user){
+    options.where = {UserId: req.user.id}
+  }
   var search = req.query.search;
   if(search==null){
 
-  models.Quiz.findAll().then(
+  models.Quiz.findAll(options).then(
     function(quizes) {
       res.render('quizes/index.ejs', { quizes: quizes, errors: []});
     }
