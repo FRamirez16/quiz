@@ -30,7 +30,7 @@ exports.create = function(req, res) {
   .then(
     function(err){
       if (err) {
-        res.render('comments/new.ejs', {comment: comment, errors: err.errors});
+        res.render('comments/new.ejs', {comment: comment, quizid: req.params.quizId, errors: err.errors});
       } else {
         comment // save: guarda en DB campo texto de comment
         .save()
@@ -48,3 +48,28 @@ exports.publish = function(req, res) {
     .catch(function(error){next(error)});
 
   };
+
+  exports.statistic = function(req,res){
+ var AUX1=[];
+ var AUX2;
+ models.Quiz.count().then(function(quizes){
+   models.Comment.findAll({where:{publicado: true}}).then(function(comments){
+     AUX2=quizes;
+     for(var i=0; i<comments.length;i++){
+       if(AUX1[comments[i].QuizId]===undefined){
+         AUX2--;
+       }
+       AUX1[comments[i].QuizId]=1;
+     }
+     res.render('quizes/statistic',
+           {quizes: quizes,
+            comments: comments.length,
+            sin_comments:AUX2,
+            con_comments:quizes-AUX2,
+            media: comments.length/quizes,
+            errors: []
+     });
+   });
+ }).catch(function(error){next(error)});
+;
+};
